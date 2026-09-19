@@ -1,0 +1,59 @@
+TITLE: About TechNova
+TechNova is an online electronics and gadgets store. We sell laptops, headphones,
+smartwatches, and accessories. Our support team is available Monday to Saturday,
+9 AM to 9 PM (PKT). This document contains our official policies. The AI
+assistant must only answer policy questions using the information below.
+
+TITLE: Shipping Policy
+We offer standard and express shipping across Pakistan. Standard shipping takes
+3 to 5 business days and costs Rs. 250. Express shipping takes 1 to 2 business
+days and costs Rs. 600. Orders above Rs. 5000 qualify for free standard
+shipping. Once an order ships, the customer receives a tracking number by email
+and SMS. We currently do not ship internationally.
+
+TITLE: Refund Policy
+Customers can request a refund within 7 days of delivery if the product is
+unused, in its original packaging, and accompanied by the original invoice.
+Refunds are processed to the original payment method within 5 to 7 business
+days after we receive and inspect the returned item. Shipping charges are
+non-refundable unless the item was defective or the wrong item was sent.
+Digital products and gift cards are not eligible for refunds.
+
+TITLE: Cancellation Policy
+Orders can be cancelled free of charge within 2 hours of placing the order,
+as long as the order has not yet been shipped. To cancel, the customer can use
+the "Cancel Order" option in their account or contact support with the order
+number. Once an order has shipped, it can no longer be cancelled, but it may
+be eligible for a return under the Refund Policy after delivery.
+
+TITLE: Warranty Policy
+All electronics sold by TechNova come with a manufacturer warranty of 12
+months from the date of purchase, unless stated otherwise on the product page.
+The warranty covers manufacturing defects but does not cover accidental
+damage, water damage, or unauthorized repairs. To make a warranty claim,
+customers should contact support with their order number and a description of
+the issue.
+
+TITLE: Payment Methods
+We accept credit cards, debit cards, bank transfers, and cash on delivery
+(COD) for orders within Pakistan. COD is available for orders under Rs.
+50,000. Online payments are processed securely and TechNova does not store
+full card details on its servers.
+
+TITLE: Order Tracking
+Customers can track their order status (Processing, Shipped, Delivered, or
+Cancelled) by providing their order number to support, or by logging into
+their account and visiting the "My Orders" page. Tracking numbers become
+active within 24 hours of shipment.
+
+TITLE: Exchange Policy
+Exchanges are allowed within 7 days of delivery for a different size or color
+of the same product, subject to availability. If the desired variant is
+unavailable, the customer will be offered a refund instead. The item being
+exchanged must be unused and in its original packaging.
+
+TITLE: Contact and Escalation
+If a customer's issue cannot be resolved by the AI assistant, or if the
+customer explicitly asks to speak with a human agent, a support ticket should
+be created and the customer should be told that a human support agent will
+follow up, typically within 24 hours on business days.
