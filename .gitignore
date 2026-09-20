@@ -1,5 +1,9 @@
-﻿backend/venv/
+﻿.venv/
+.venv312/
+backend/venv/
+.vercel/
 frontend/node_modules/
-__pycache__/
-*.pyc
+frontend/.env.local
 .env
+backend/__pycache__/
+*.pyc
