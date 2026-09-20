@@ -1,7 +1,7 @@
 """
 FastAPI application entry point for the AI Customer Support Agent.
 
-Run with:  uvicorn main:app --reload --port 8000
+Run with: uvicorn main:app --reload --port 8000
 """
 
 from typing import List
@@ -22,11 +22,17 @@ from models import (
 )
 from ai_agent import run_agent
 
+
 app = FastAPI(title="AI Customer Support Agent")
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://ai-support-agent-rnuh.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,7 +52,9 @@ def health():
 @app.get("/api/conversations", response_model=List[ConversationOut])
 def list_conversations(db: Session = Depends(get_db)):
     conversations = (
-        db.query(Conversation).order_by(Conversation.created_at.desc()).all()
+        db.query(Conversation)
+        .order_by(Conversation.created_at.desc())
+        .all()
     )
     return conversations
 
@@ -60,11 +68,25 @@ def create_conversation(db: Session = Depends(get_db)):
     return conversation
 
 
-@app.get("/api/conversations/{conversation_id}/messages", response_model=List[MessageOut])
-def get_messages(conversation_id: int, db: Session = Depends(get_db)):
-    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+@app.get(
+    "/api/conversations/{conversation_id}/messages",
+    response_model=List[MessageOut],
+)
+def get_messages(
+    conversation_id: int,
+    db: Session = Depends(get_db),
+):
+    conversation = (
+        db.query(Conversation)
+        .filter(Conversation.id == conversation_id)
+        .first()
+    )
+
     if not conversation:
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Conversation not found",
+        )
 
     messages = (
         db.query(Message)
@@ -72,16 +94,30 @@ def get_messages(conversation_id: int, db: Session = Depends(get_db)):
         .order_by(Message.created_at.asc())
         .all()
     )
+
     return messages
 
 
 @app.delete("/api/conversations/{conversation_id}")
-def delete_conversation(conversation_id: int, db: Session = Depends(get_db)):
-    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+def delete_conversation(
+    conversation_id: int,
+    db: Session = Depends(get_db),
+):
+    conversation = (
+        db.query(Conversation)
+        .filter(Conversation.id == conversation_id)
+        .first()
+    )
+
     if not conversation:
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Conversation not found",
+        )
+
     db.delete(conversation)
     db.commit()
+
     return {"deleted": True}
 
 
@@ -91,47 +127,61 @@ def _make_title(text: str, max_len: int = 40) -> str:
 
 
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(payload: ChatRequest, db: Session = Depends(get_db)):
-    # Get or create the conversation.
+def chat(
+    payload: ChatRequest,
+    db: Session = Depends(get_db),
+):
     if payload.conversation_id:
         conversation = (
             db.query(Conversation)
             .filter(Conversation.id == payload.conversation_id)
             .first()
         )
+
         if not conversation:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+            raise HTTPException(
+                status_code=404,
+                detail="Conversation not found",
+            )
     else:
-        conversation = Conversation(title=_make_title(payload.message))
+        conversation = Conversation(
+            title=_make_title(payload.message)
+        )
         db.add(conversation)
         db.commit()
         db.refresh(conversation)
 
-    # If this is the first message, set the conversation title from it.
     existing_count = (
-        db.query(Message).filter(Message.conversation_id == conversation.id).count()
+        db.query(Message)
+        .filter(Message.conversation_id == conversation.id)
+        .count()
     )
+
     if existing_count == 0:
         conversation.title = _make_title(payload.message)
         db.commit()
 
-    # Load prior messages for conversational context.
     prior_messages = (
         db.query(Message)
         .filter(Message.conversation_id == conversation.id)
         .order_by(Message.created_at.asc())
         .all()
     )
-    history = [{"role": m.role, "content": m.content} for m in prior_messages]
 
-    # Save the incoming user message.
+    history = [
+        {"role": m.role, "content": m.content}
+        for m in prior_messages
+    ]
+
     user_msg = Message(
-        conversation_id=conversation.id, role="user", content=payload.message
+        conversation_id=conversation.id,
+        role="user",
+        content=payload.message,
     )
+
     db.add(user_msg)
     db.commit()
 
-    # Run the AI agent (RAG + tool calling via Groq).
     try:
         agent_result = run_agent(
             db=db,
@@ -140,20 +190,31 @@ def chat(payload: ChatRequest, db: Session = Depends(get_db)):
             history=history,
         )
     except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )
 
-    reply_text = agent_result["reply"] or "Sorry, I couldn't generate a response."
-
-    # Save the assistant's reply.
-    assistant_msg = Message(
-        conversation_id=conversation.id, role="assistant", content=reply_text
+    reply_text = (
+        agent_result["reply"]
+        or "Sorry, I couldn't generate a response."
     )
+
+    assistant_msg = Message(
+        conversation_id=conversation.id,
+        role="assistant",
+        content=reply_text,
+    )
+
     db.add(assistant_msg)
     db.commit()
 
     order_info = None
+
     if agent_result.get("order_info"):
-        order_info = OrderInfo(**agent_result["order_info"])
+        order_info = OrderInfo(
+            **agent_result["order_info"]
+        )
 
     return ChatResponse(
         conversation_id=conversation.id,
@@ -163,3 +224,5 @@ def chat(payload: ChatRequest, db: Session = Depends(get_db)):
         ticket_id=agent_result.get("ticket_id"),
         sources=agent_result.get("sources", []),
     )
+
+
